@@ -23,25 +23,28 @@ def check_if_line_new_hunk(line):
         return True
     return False
 
-def process_line(line):
+def process_line(line, commit=""):
     new_file = check_if_line_new_file(line)
     if new_file:
         # we have a new file section...
-        print "New file %s" % (new_file,)
+        #print "New file %s" % (new_file,)
         assert new_file[0] == new_file[1] # we'll asset these string are going to be the same for now...
         filename = new_file[1]
 
         if filename not in knownFiles:
             fileData = FileData(filename)
+            fileData.commits.add(commit)
             knownFiles[filename] = fileData
+
 
         global currentFile
         currentFile = knownFiles[filename]
 
     elif check_if_line_new_hunk(line):
-        print "New hunk %s" % line
+        # print "New hunk %s" % line
         if currentFile != None:
             currentFile.num_hunks += 1
+            currentFile.commits.add(commit)
     else:
         pass
         # ignore this line for now
@@ -74,7 +77,7 @@ if __name__ == '__main__':
                         action='store',
                         type=str,
                         default=None,
-                        help="File name containing the git diff output (note : this is not the numstat output). The conent "
+                        help="File name containing the git diff output (note : this is not the numstat output). The content "
                              "the file will be processed verses parsing the git log directly")
 
     parser.add_argument('--repo_path',dest='path',
@@ -94,8 +97,26 @@ if __name__ == '__main__':
     if args.file:
         file = args.file
         check_file(file)
-        for file in knownFiles:
-            print knownFiles[file]
     else:
         # we start parsing the git log directly
-        print get_commit_list(args.path, args.stop_commit)
+        commit_list =  get_commit_list(args.path, args.stop_commit)
+
+        commit_tuples = get_commit_tuple_pairs(commit_list=commit_list)
+
+        for x, y in commit_tuples:
+            print "Diffing %s with %s" % (x, y)
+            diff_output = get_diff_between_commits(args.path, x, y)
+            for line in diff_output.split('\n'):
+                process_line(line,x)
+
+
+    files_changed = knownFiles.values()
+
+   # files_changed = [ x for x in files_changed if x.]
+
+    files_changed = sorted(files_changed, key=lambda file: len(file.commits))
+
+    for file in files_changed:
+        print file
+
+    print "Total known files %d" % (len(knownFiles))
