@@ -2,6 +2,7 @@ import argparse
 import os
 import re
 from FileData import FileData
+from git_interface import get_commit_list, get_commit_tuple_pairs, get_diff_between_commits
 
 # the following is very helpful in understanding how the git diff format working
 # http://stackoverflow.com/questions/2529441/how-to-read-the-output-from-git-diff
@@ -69,13 +70,32 @@ def check_file(file=None):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('file',help="File name containing the git diff output (note : this is not the numstat output)")
+    parser.add_argument('--file',dest='file',
+                        action='store',
+                        type=str,
+                        default=None,
+                        help="File name containing the git diff output (note : this is not the numstat output). The conent "
+                             "the file will be processed verses parsing the git log directly")
+
+    parser.add_argument('--repo_path',dest='path',
+                        action='store',
+                        type=str,
+                        default=".",
+                        help="path to your git repo")
+
+    parser.add_argument('--stop_commit',dest='stop_commit',
+                        action='store',
+                        type=str,
+                        default=None,
+                        help="Commit to stop at (limits processing)")
     args = parser.parse_args()
 
-    file = args.file
 
-    check_file(file)
-
-    for file in knownFiles:
-        print knownFiles[file]
-
+    if args.file:
+        file = args.file
+        check_file(file)
+        for file in knownFiles:
+            print knownFiles[file]
+    else:
+        # we start parsing the git log directly
+        print get_commit_list(args.path, args.stop_commit)
