@@ -116,7 +116,6 @@ if __name__ == '__main__':
 
     files_changed = knownFiles.values()
 
-    print args.filter_extensions
     if args.filter_extensions:
         files_changed = [x for x in files_changed if x.getFileExtension() in args.filter_extensions]
 
