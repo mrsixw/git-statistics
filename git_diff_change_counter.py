@@ -36,7 +36,6 @@ def process_line(line, commit=""):
             fileData.commits.add(commit)
             knownFiles[filename] = fileData
 
-
         global currentFile
         currentFile = knownFiles[filename]
 
