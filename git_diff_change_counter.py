@@ -3,6 +3,7 @@ import os
 import re
 from FileData import FileData
 from git_interface import get_commit_list, get_commit_tuple_pairs, get_diff_between_commits
+from FileCommitData import FileCommitData
 
 # the following is very helpful in understanding how the git diff format working
 # http://stackoverflow.com/questions/2529441/how-to-read-the-output-from-git-diff
@@ -19,9 +20,15 @@ def check_if_line_new_file(line):
     return None
 
 def check_if_line_new_hunk(line):
-    if re.match("@@.*@@",line):
-        return True
-    return False
+    if re.match("^@@.*@@", line):
+        match = re.match("^@@ -([0-9]*),*([0-9]*) \+([0-9]*),*([0-9]*) @@",line)
+        if match:
+            return match.group(1,2,3,4)
+        else:
+            # if we dont match the complex pattern, but we do matach the simple one, we have a problem
+            raise ValueError("%s caused some issues" % line)
+    return None
+
 
 def process_line(line, commit=""):
     new_file = check_if_line_new_file(line)
@@ -39,15 +46,29 @@ def process_line(line, commit=""):
         global currentFile
         currentFile = knownFiles[filename]
 
-    elif check_if_line_new_hunk(line):
-        # print "New hunk %s" % line
-        if currentFile != None:
-            currentFile.num_hunks += 1
-            currentFile.commits.add(commit)
     else:
-        pass
-        # ignore this line for now
-        #print "Ignoreing line %s" % line
+        hunk_data = check_if_line_new_hunk(line)
+        if hunk_data is not None:
+            # print "New hunk %s" % line
+            if currentFile != None:
+                currentFile.num_hunks += 1
+
+                commitData = FileCommitData(commit)
+
+                if hunk_data[1] == '':
+                   pass
+                elif hunk_data[3] == '':
+                  pass
+                else:
+                    old_start, old_len, new_start, new_len = hunk_data
+                    commitData.hunks[new_start] = new_len
+
+
+                currentFile.commits.add(commitData)
+        else:
+            pass
+            # ignore this line for now
+            #print "Ignoreing line %s" % line
 
 
 
@@ -110,8 +131,10 @@ if __name__ == '__main__':
         for x, y in commit_tuples:
             print "Diffing %s with %s" % (x, y)
             diff_output = get_diff_between_commits(args.path, x, y)
+            #print diff_output
             for line in diff_output.split('\n'):
                 process_line(line,x)
+
 
 
     files_changed = knownFiles.values()
@@ -125,3 +148,5 @@ if __name__ == '__main__':
         print file
 
     print "Total known files %d" % (len(knownFiles))
+
+

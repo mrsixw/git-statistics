@@ -8,8 +8,7 @@ class FileData:
         self.commits = set()
 
     def __str__(self):
-        return "File %s (%s) had %d hunks changed in %d commits (%s)" % (self.filename, self.getFileExtension() , self.num_hunks, len(self.commits),
-                                                                    ", ".join(self.commits))
+        return "File %s (%s) had %d hunks changed in %d commits" % (self.filename, self.getFileExtension() , self.num_hunks, len(self.commits))
 
     def __repr__(self):
         return "FileData(%r)" % (self.filename)
