@@ -8,10 +8,13 @@ class FileData:
         self.commits = set()
 
     def __str__(self):
-        return "File %s had %d hunks changed in %d commits (%s)" % (self.filename, self.num_hunks, len(self.commits),
+        return "File %s (%s) had %d hunks changed in %d commits (%s)" % (self.filename, self.getFileExtension() , self.num_hunks, len(self.commits),
                                                                     ", ".join(self.commits))
 
     def __repr__(self):
         return "FileData(%r)" % (self.filename)
 
 
+    def getFileExtension(self):
+        last_dot_pos = self.filename.rfind('.')
+        return self.filename[last_dot_pos+1:]

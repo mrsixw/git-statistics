@@ -91,6 +91,11 @@ if __name__ == '__main__':
                         type=str,
                         default=None,
                         help="Commit to stop at (limits processing)")
+    parser.add_argument('--filter_extensions',dest='filter_extensions',
+                        nargs="+",
+                        action='store',
+                        default=None,
+                        help="Filter the output based on the supplied list of file extensions")
     args = parser.parse_args()
 
 
@@ -112,7 +117,9 @@ if __name__ == '__main__':
 
     files_changed = knownFiles.values()
 
-   # files_changed = [ x for x in files_changed if x.]
+    print args.filter_extensions
+    if args.filter_extensions:
+        files_changed = [x for x in files_changed if x.getFileExtension() in args.filter_extensions]
 
     files_changed = sorted(files_changed, key=lambda file: len(file.commits))
 
