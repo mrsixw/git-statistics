@@ -17,7 +17,7 @@ def get_commit_list(repo_path, stop_commit = None):
     return ret
 
 def get_diff_between_commits(repo_path, commit_a, commit_b):
-    return subprocess.check_output(['git','--no-pager','-C',repo_path,'diff','--full-index',commit_a,commit_b])
+    return subprocess.check_output(['git','--no-pager','-C',repo_path,'diff','--numstat','--ignore-space-change',commit_a,commit_b])
 
 
 def get_commit_tuple_pairs(commit_list):

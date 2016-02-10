@@ -4,72 +4,32 @@ import re
 from FileData import FileData
 from git_interface import get_commit_list, get_commit_tuple_pairs, get_diff_between_commits
 from FileCommitData import FileCommitData
+from tabulate import tabulate
 
 # the following is very helpful in understanding how the git diff format working
 # http://stackoverflow.com/questions/2529441/how-to-read-the-output-from-git-diff
 currentFile = None
 knownFiles = {}
 
-
-def check_if_line_new_file(line):
-    # check if we have a new file based on the diff line. If so, return a tuple containing the file
-    # names that are being diff'd
-    match = re.match("^diff --git a/(.*) b/(.*)$",line)
-    if match:
-        return match.group(1,2) # we don't need whole match, so ignore group 0
-    return None
-
-def check_if_line_new_hunk(line):
-    if re.match("^@@.*@@", line):
-        match = re.match("^@@ -([0-9]*),*([0-9]*) \+([0-9]*),*([0-9]*) @@",line)
-        if match:
-            return match.group(1,2,3,4)
-        else:
-            # if we dont match the complex pattern, but we do matach the simple one, we have a problem
-            raise ValueError("%s caused some issues" % line)
-    return None
-
-
 def process_line(line, commit=""):
-    new_file = check_if_line_new_file(line)
-    if new_file:
-        # we have a new file section...
-        #print "New file %s" % (new_file,)
-        assert new_file[0] == new_file[1] # we'll asset these string are going to be the same for now...
-        filename = new_file[1]
 
-        if filename not in knownFiles:
-            fileData = FileData(filename)
-            fileData.commits.add(commit)
-            knownFiles[filename] = fileData
+    match = re.match("^([0-9]*|-+?)\s([0-9]*|-+?)\s(.*)$",line)
+    if match:
+        additions, deletions, file = match.group(1,2,3)
 
-        global currentFile
-        currentFile = knownFiles[filename]
+        if additions == '-':
+            additions = 0
+        if deletions == '-':
+            deletions = 0
 
-    else:
-        hunk_data = check_if_line_new_hunk(line)
-        if hunk_data is not None:
-            # print "New hunk %s" % line
-            if currentFile != None:
-                currentFile.num_hunks += 1
-
-                commitData = FileCommitData(commit)
-
-                if hunk_data[1] == '':
-                   pass
-                elif hunk_data[3] == '':
-                  pass
-                else:
-                    old_start, old_len, new_start, new_len = hunk_data
-                    commitData.hunks[new_start] = new_len
-
-
-                currentFile.commits.add(commitData)
+        if file in knownFiles:
+            fileData = knownFiles[file]
         else:
-            pass
-            # ignore this line for now
-            #print "Ignoreing line %s" % line
+            fileData = FileData(file)
+            knownFiles[file] = fileData
 
+        commitData = FileCommitData(int(additions), int(deletions),commit)
+        fileData.commits.add(commitData)
 
 
 def process_file(file):
@@ -105,7 +65,11 @@ if __name__ == '__main__':
                         type=str,
                         default=".",
                         help="path to your git repo")
-
+    parser.add_argument('--output_file',dest='outputfile',
+                        action='store',
+                        type=str,
+                        default="results.html",
+                        help="File to place the results in (HTML)")
     parser.add_argument('--stop_commit',dest='stop_commit',
                         action='store',
                         type=str,
@@ -144,9 +108,11 @@ if __name__ == '__main__':
 
     files_changed = sorted(files_changed, key=lambda file: len(file.commits))
 
-    for file in files_changed:
-        print file
+    table = []
+    for f in files_changed:
+        table.append(f.getTabulateListFormat())
 
-    print "Total known files %d" % (len(knownFiles))
+    with open(args.outputfile,'w+') as f:
+        f.write(tabulate(table, headers =['File','Ext','Num Commits','Lines Added','Lines Deleted'], tablefmt='html'))
 
 
