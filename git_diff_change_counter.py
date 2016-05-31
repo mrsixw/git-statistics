@@ -5,6 +5,7 @@ from FileData import FileData
 from git_interface import GitInterface
 from FileCommitData import FileCommitData
 from tabulate import tabulate
+import dateparser
 
 # the following is very helpful in understanding how the git diff format working
 # http://stackoverflow.com/questions/2529441/how-to-read-the-output-from-git-diff
@@ -53,12 +54,11 @@ def check_file(file=None):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--file',dest='file',
+    parser.add_argument('--data-dir',dest='data_dir',
                         action='store',
                         type=str,
-                        default=None,
-                        help="File name containing the git diff output (note : this is not the numstat output). The content "
-                             "the file will be processed verses parsing the git log directly")
+                        default='./data',
+                        help="Directory in which to store the data generated from git. This will later be parsed")
 
     parser.add_argument('--repo_path',dest='path',
                         action='store',
@@ -83,37 +83,29 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
 
-    if args.file:
-        file = args.file
-        check_file(file)
-    else:
-        # we start parsing the git log directly
-        git_if = GitInterface(args.path)
-        commit_list =  git_if.get_commit_list(args.stop_commit)
+    if not os.path.exists(args.data_dir):
+        os.mkdir(args.data_dir)
 
-        commit_tuples = git_if.get_commit_tuple_pairs(commit_list=commit_list)
+    # we start parsing the git log directly
+    git_if = GitInterface(args.path)
+    commit_list =  git_if.get_commit_list(args.stop_commit)
 
-        for x, y in commit_tuples:
-            print "Diffing %s with %s" % (x, y)
-            diff_output = git_if.get_diff_between_commits(x, y)
-            #print diff_output
-            for line in diff_output.split('\n'):
-                process_line(line,x)
+    print commit_list
+
+    for commit in commit_list:
+        print commit
+        commit_output =  git_if.show_commit(commit)
 
 
+        for line in commit_output.split('\n'):
+            print line
+            if line.startswith('Date:'):
+                date_str = line[5:]
+                parsed_date = dateparser.parse(date_str)
+                break
 
-    files_changed = knownFiles.values()
-
-    if args.filter_extensions:
-        files_changed = [x for x in files_changed if x.getFileExtension() in args.filter_extensions]
-
-    files_changed = sorted(files_changed, key=lambda file: len(file.commits))
-
-    table = []
-    for f in files_changed:
-        table.append(f.getTabulateListFormat())
-
-    with open(args.outputfile,'w+') as f:
-        f.write(tabulate(table, headers =['File','Ext','Num Commits','Lines Added','Lines Deleted'], tablefmt='html'))
+        filename = '%s_%s_%s_%s_%s_%s.txt' % (parsed_date.year, parsed_date.month, parsed_date.day, parsed_date.hour,parsed_date.minute, commit)
+        with open(args.data_dir + os.sep + filename,'w') as f:
+            f.write(commit_output)
 
 

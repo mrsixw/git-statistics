@@ -7,7 +7,9 @@ class GitInterface:
 
     def get_commit_list(self, stop_commit = None):
         output = subprocess.check_output(['git','--no-pager','-C',self.repo_path,'log','--format="%H"'])
-        output = output.replace('"','').split('\n')
+
+        output = output.replace('"','').split('\n')[:-1] # there is a new line at the end that causes weirdness
+
         ret = None
         if stop_commit is not None:
             # we need to limit the number of commits we want to process
@@ -25,8 +27,8 @@ class GitInterface:
 
 
     def show_commit(self, commit):
-        output = subprocess.check_output(['git', '--no-pager', '-C', self.repo_path, 'show', commit])
-        pass
+        output = subprocess.check_output(['git', '--no-pager', '-C', self.repo_path, 'show','--numstat','--ignore-space-change', commit])
+        return output
 
     def get_commit_tuple_pairs(self,commit_list):
         return zip(commit_list, commit_list[1::])
