@@ -2,7 +2,7 @@ import argparse
 import os
 import re
 from FileData import FileData
-from git_interface import get_commit_list, get_commit_tuple_pairs, get_diff_between_commits
+from git_interface import GitInterface
 from FileCommitData import FileCommitData
 from tabulate import tabulate
 
@@ -88,13 +88,14 @@ if __name__ == '__main__':
         check_file(file)
     else:
         # we start parsing the git log directly
-        commit_list =  get_commit_list(args.path, args.stop_commit)
+        git_if = GitInterface(args.path)
+        commit_list =  git_if.get_commit_list(args.stop_commit)
 
-        commit_tuples = get_commit_tuple_pairs(commit_list=commit_list)
+        commit_tuples = git_if.get_commit_tuple_pairs(commit_list=commit_list)
 
         for x, y in commit_tuples:
             print "Diffing %s with %s" % (x, y)
-            diff_output = get_diff_between_commits(args.path, x, y)
+            diff_output = git_if.get_diff_between_commits(x, y)
             #print diff_output
             for line in diff_output.split('\n'):
                 process_line(line,x)
