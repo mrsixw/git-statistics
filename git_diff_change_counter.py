@@ -104,7 +104,12 @@ if __name__ == '__main__':
                 parsed_date = dateparser.parse(date_str)
                 break
 
-        filename = '%s_%s_%s_%s_%s_%s.txt' % (parsed_date.year, parsed_date.month, parsed_date.day, parsed_date.hour,parsed_date.minute, commit)
+        filename = '%s_%s_%s_%s_%s_%s.txt' % (parsed_date.year,
+                                              str(parsed_date.month).zfill(2),
+                                              str(parsed_date.day).zfill(2),
+                                              str(parsed_date.hour).zfill(2),
+                                              str(parsed_date.minute).zfill(2),
+                                              commit)
         with open(args.data_dir + os.sep + filename,'w') as f:
             f.write(commit_output)
 
