@@ -16,6 +16,8 @@
   <div class="panel-body">
       <table class="table">
           <tr><td>Total commits</td><td>{{ commits|length }}</td></tr>
+          <tr><td>Earliest commit</td><td>{{ data_dict['earliest_commit'] }}</td></tr>
+          <tr><td>Latest commit</td><td>{{ data_dict['latest_commit'] }}</td></tr>
       </table>
   </div>
 </div>

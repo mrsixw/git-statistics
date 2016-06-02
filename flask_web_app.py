@@ -23,10 +23,13 @@ def branch_index(branch):
             lines = f.readlines()
             #print lines
 
+    data_dict = dict()
+    data_dict['earliest_commit'] = 1
+    data_dict['latest_commit'] = 10
 
     print "Total commits %d" % (len(commits))
 
-    return render_template('branch.html', branches = branches, branch = branch, commits = commits)
+    return render_template('branch.html', branches = branches, branch = branch, commits = commits, data_dict = data_dict)
 
 @app.route('/')
 def index():
