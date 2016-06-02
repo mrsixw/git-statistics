@@ -14,6 +14,9 @@ def branch_index(branch):
     commits = os.listdir('data/'+branch)
     print commits
 
+    branches = os.listdir('data')
+    print branches
+
     for commit in commits:
         full_file_path = 'data/%s/%s' % (branch, commit)
         with open(full_file_path,'r') as f:
@@ -23,7 +26,7 @@ def branch_index(branch):
 
     print "Total commits %d" % (len(commits))
 
-    return render_template('branch.html', branch = branch)
+    return render_template('branch.html', branches = branches, branch = branch, commits = commits)
 
 @app.route('/')
 def index():
