@@ -7,6 +7,12 @@ import os
 app = Flask(__name__)
 Bootstrap(app)
 
+def get_base_url():
+    base =  app.config['SERVER_NAME']
+    if  app.config['APPLICATION_ROOT'] is not None:
+        base += app.config['APPLICATION_ROOT']
+    return base
+
 
 @app.route('/branch/<branch>')
 def branch_index(branch):
@@ -38,7 +44,7 @@ def index():
     branches = os.listdir('data')
     print branches
 
-    return render_template('index.html', server_base = app.config['SERVER_NAME'] ,branches = branches)
+    return render_template('index.html', server_base = get_base_url() ,branches = branches)
 
 if __name__ == '__main__':
     app.run(debug=True)
