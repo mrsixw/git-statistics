@@ -19,7 +19,7 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Branch selector <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     {% for branch in branches %}
-                        <li><a href="/branch/{{ branch }}">{{ branch }}</a></li>
+                        <li><a href="{{ server_name }}/branch/{{branch }}">{{ branch }}</a></li>
                     {% endfor %}
                 </ul>
               </li>

@@ -38,7 +38,7 @@ def index():
     branches = os.listdir('data')
     print branches
 
-    return render_template('index.html', branches = branches)
+    return render_template('index.html', server_base = app.config['SERVER_NAME'] ,branches = branches)
 
 if __name__ == '__main__':
     app.run(debug=True)
