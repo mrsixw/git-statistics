@@ -37,7 +37,7 @@ def branch_index(branch):
 
     print "Total commits %d" % (len(commits))
 
-    return render_template('branch.html', branches = branches, branch = branch, commits = commits, data_dict = data_dict)
+    return render_template('branch.html', server_base = get_base_url(),branches = branches, branch = branch, commits = commits, data_dict = data_dict)
 
 @app.route('/')
 def index():
