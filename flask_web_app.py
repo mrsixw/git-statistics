@@ -10,8 +10,9 @@ Bootstrap(app)
 def get_base_url():
     base =  app.config['SERVER_NAME']
     print app.config
-    if  app.config['APPLICATION_ROOT'] is not None:
+    if app.config['APPLICATION_ROOT'] is not None:
         base += app.config['APPLICATION_ROOT']
+    print base
     return base
 
 
