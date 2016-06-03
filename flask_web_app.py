@@ -8,10 +8,13 @@ app = Flask(__name__)
 Bootstrap(app)
 
 def get_base_url():
-    base =  app.config['SERVER_NAME']
-    print app.config
-    if app.config['APPLICATION_ROOT'] is not None:
-        base += app.config['APPLICATION_ROOT']
+    if app.config['SERVER_NAME'] is not None:
+        base =  app.config['SERVER_NAME']
+        print app.config
+        if app.config['APPLICATION_ROOT'] is not None:
+            base += app.config['APPLICATION_ROOT']
+    else:
+        base = '127.0.0.1:5000'
     print base
     return base
 
