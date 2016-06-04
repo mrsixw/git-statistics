@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, session
 from flask_bootstrap import Bootstrap
 import os
 
@@ -22,25 +22,11 @@ def get_base_url():
 @app.route('/branch/<branch>')
 def branch_index(branch):
 
-    commits = os.listdir('data/'+branch)
-    print commits
+    session['current_branch'] = branch
 
-    branches = os.listdir('data')
-    print branches
 
-    for commit in commits:
-        full_file_path = 'data/%s/%s' % (branch, commit)
-        with open(full_file_path,'r') as f:
-            lines = f.readlines()
-            #print lines
 
-    data_dict = dict()
-    data_dict['earliest_commit'] = 1
-    data_dict['latest_commit'] = 10
-
-    print "Total commits %d" % (len(commits))
-
-    return render_template('branch.html', server_base = get_base_url(),branches = branches, branch = branch, commits = commits, data_dict = data_dict)
+    return render_template('branch.html', commits = commits, data_dict = data_dict)
 
 @app.route('/')
 def index():
@@ -48,8 +34,12 @@ def index():
     # list the branches
     branches = os.listdir('data')
     print branches
+    session['branches'] = branches
+    session['server_base_url'] = get_base_url()
 
-    return render_template('index.html', server_base = get_base_url() ,branches = branches)
+
+    return render_template('index.html')
 
 if __name__ == '__main__':
+    app.secret_key = os.urandom(24)
     app.run(debug=True)
