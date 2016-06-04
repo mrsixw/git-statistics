@@ -8,5 +8,8 @@ class CommitData(object):
         self.commiter = ''
         self.commit_hash = ''
         self.date = None
-        self.merge_id = None
+        #self.merge_id = None
         self.files_changed = []
+
+        self.totalAdditions = 0
+        self.totalDeletions = 0

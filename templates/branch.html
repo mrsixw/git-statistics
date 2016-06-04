@@ -15,13 +15,15 @@
   </div>
   <div class="panel-body">
       <table class="table">
-          <tr><td>Total commits</td><td>{{ commits|length }}</td></tr>
-          <tr><td>Earliest commit</td><td>{{ data_dict['earliest_commit'] }}</td></tr>
-          <tr><td>Latest commit</td><td>{{ data_dict['latest_commit'] }}</td></tr>
+          <tr><td>Total commits</td><td>{{ branch_data['raw']|length }}</td></tr>
+          <tr><td>Earliest Commit</td><td>{{ branch_data['earliest_brach_commit'] }}</td></tr>
+          <tr><td>Most Recent Commit</td><td>{{ branch_data['recent_branch_commit'] }}</td></tr>
+          <tr><td>Total File Additions</td><td>{{ branch_data['total_branch_lines_additions'] }}</td></tr>
+          <tr><td>Total File Deletions</td><td>{{ branch_data['total_branch_lines_deletions'] }}</td></tr>
       </table>
   </div>
 </div>
-    {% for commit in commits %}
+    {% for commit in branch_data %}
         <h4>{{commit}}</h4>
     {% endfor %}
 {% endblock %}
