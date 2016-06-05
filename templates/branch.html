@@ -20,10 +20,39 @@
           <tr><td>Most Recent Commit</td><td>{{ branch_data['recent_branch_commit'] }}</td></tr>
           <tr><td>Total File Additions</td><td>{{ branch_data['total_branch_lines_additions'] }}</td></tr>
           <tr><td>Total File Deletions</td><td>{{ branch_data['total_branch_lines_deletions'] }}</td></tr>
+          <tr><td>MVP</td><td>{{ branch_data['top_commiters'][0][0] }} - {{ branch_data['top_commiters'][0][1] }} commits</td></tr>
       </table>
   </div>
 </div>
-    {% for commit in branch_data %}
-        <h4>{{commit}}</h4>
-    {% endfor %}
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Top Committers</h3>
+  </div>
+  <div class="panel-body">
+      <table class="table">
+
+          {% for c in branch_data['top_commiters'] %}
+            <tr><td>{{ c[0] }}</td><td>{{ c[1] }} commits</td></tr>
+          {% endfor %}
+      </table>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Top File Modifications</h3>
+  </div>
+  <div class="panel-body">
+      <table class="table">
+
+          {% for f in branch_data['popular_files_changed'] %}
+            <tr><td>{{ f[0] }}</td><td>{{ f[1] }} commit modifications</td></tr>
+          {% endfor %}
+      </table>
+  </div>
+</div>
+
+
+
 {% endblock %}
