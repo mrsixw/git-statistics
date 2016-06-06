@@ -4,8 +4,10 @@ from flask import Flask, request, render_template, session
 from flask_bootstrap import Bootstrap
 import os
 from git_data_processor import generate_branch_insight
+from flask_json_serialiser import GitStatsFlaskJSONEncoder
 
 app = Flask(__name__)
+app.json_encoder = GitStatsFlaskJSONEncoder
 Bootstrap(app)
 
 def get_base_url():
@@ -24,6 +26,7 @@ def get_base_url():
 def branch_index(branch):
 
     session['current_branch'] = branch
+    session['branch_insight'] = generate_branch_insight(branch)
 
     return render_template('branch.html', branch_data = generate_branch_insight(branch))
 
