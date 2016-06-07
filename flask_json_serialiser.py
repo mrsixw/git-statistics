@@ -11,10 +11,9 @@ class GitStatsFlaskJSONEncoder(JSONEncoder):
         if isinstance(o, FileCommitData):
             schema = FileCommitDataSchema()
 
-            print schema.dump(o)
+            #print schema.dump(o)
 
             return schema.dump(o)
-
 
         elif isinstance(o, CommitData):
             return ''

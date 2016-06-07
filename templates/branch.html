@@ -15,12 +15,12 @@
   </div>
   <div class="panel-body">
       <table class="table">
-          <tr><td>Total commits</td><td>{{ branch_data['raw']|length }}</td></tr>
-          <tr><td>Earliest Commit</td><td>{{ branch_data['earliest_brach_commit'] }}</td></tr>
-          <tr><td>Most Recent Commit</td><td>{{ branch_data['recent_branch_commit'] }}</td></tr>
-          <tr><td>Total File Additions</td><td>{{ branch_data['total_branch_lines_additions'] }}</td></tr>
-          <tr><td>Total File Deletions</td><td>{{ branch_data['total_branch_lines_deletions'] }}</td></tr>
-          <tr><td>MVP</td><td>{{ branch_data['top_commiters'][0][0] }} - {{ branch_data['top_commiters'][0][1] }} commits</td></tr>
+          <tr><td>Total commits</td><td>{{ branch_insight['raw']|length }}</td></tr>
+          <tr><td>Earliest Commit</td><td>{{ branch_insight['earliest_brach_commit'] }}</td></tr>
+          <tr><td>Most Recent Commit</td><td>{{ branch_insight['recent_branch_commit'] }}</td></tr>
+          <tr><td>Total File Additions</td><td>{{ branch_insight['total_branch_lines_additions'] }}</td></tr>
+          <tr><td>Total File Deletions</td><td>{{ branch_insight['total_branch_lines_deletions'] }}</td></tr>
+          <tr><td>MVP</td><td>{{ branch_insight['top_commiters'][0][0] }} - {{ branch_insight['top_commiters'][0][1] }} commits</td></tr>
       </table>
   </div>
 </div>
@@ -32,7 +32,7 @@
   <div class="panel-body">
       <table class="table">
 
-          {% for c in branch_data['top_commiters'] %}
+          {% for c in branch_insight['top_commiters'] %}
             <tr><td>{{ c[0] }}</td><td>{{ c[1] }} commits</td></tr>
           {% endfor %}
       </table>
@@ -46,7 +46,7 @@
   <div class="panel-body">
       <table class="table">
 
-          {% for f in branch_data['popular_files_changed'] %}
+          {% for f in branch_insight['popular_files_changed'] %}
             <tr><td>{{ f[0] }}</td><td>{{ f[1] }} commit modifications</td></tr>
           {% endfor %}
       </table>

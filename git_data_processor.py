@@ -59,7 +59,7 @@ def process_commit_file(commit_file = None):
 def generate_brnach_commit_data(branch = None):
 
     branch_commits = os.listdir('data/'+branch)
-    print branch_commits
+    #print branch_commits
 
     commits_dict = {}
 
