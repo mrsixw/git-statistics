@@ -27,7 +27,7 @@ def get_base_url():
 def generate_chart():
 
     print '**************'
-    #print session['branch_insight']
+    print session['branch_insight']
     print '**************'
 
     chart = pygal.Bar()
@@ -59,4 +59,5 @@ def index():
 
 if __name__ == '__main__':
     app.secret_key = os.urandom(24)
+    print app.json_encoder
     app.run(debug=True)
