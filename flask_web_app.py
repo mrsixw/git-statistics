@@ -5,6 +5,7 @@ from flask_bootstrap import Bootstrap
 import os
 from git_data_processor import generate_branch_insight
 from flask_json_serialiser import GitStatsFlaskJSONEncoder
+import pygal
 
 app = Flask(__name__)
 app.json_encoder = GitStatsFlaskJSONEncoder
@@ -20,6 +21,20 @@ def get_base_url():
         base = '127.0.0.1:5000'
     print base
     return base
+
+
+@app.route('/charts/bar.svg')
+def generate_chart():
+
+    print '**************'
+    print session['branch_insight']
+    print '**************'
+
+    chart = pygal.Bar()
+    chart.add('Fibonacci', [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55])
+    #chart = chart.render_data_uri()
+
+    return chart.render_response()
 
 
 @app.route('/branch/<branch>')
@@ -44,4 +59,5 @@ def index():
 
 if __name__ == '__main__':
     app.secret_key = os.urandom(24)
+    print app.json_encoder
     app.run(debug=True)
