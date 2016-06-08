@@ -157,8 +157,11 @@ if __name__ == '__main__':
 
 
         commits = generate_branch_commit_data(dir)
-
+        print len(commits)
         for commit in commits.keys():
+            print commits[commit].commit_hash
+            #print len(commits[commit].files_changed)
             for file in commits[commit].files_changed:
+                #print file.file
                 db._add_file(file.file)
                 #print db._get_file_id(file.file)

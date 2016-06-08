@@ -13,7 +13,7 @@ class CommitData():
         self.commit_hash = commit_hash
         self.date = date
         #self.merge_id = None
-        self.files_changed = files_changed
+        self.files_changed = [] # this shouldnt work, there is a bug where files_change on pass in gets set...why??
         self.branch = branch
 
         self.totalAdditions = additions
