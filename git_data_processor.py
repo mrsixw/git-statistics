@@ -56,7 +56,7 @@ def process_commit_file(commit_file = None):
 
     return commit_data
 
-def generate_brnach_commit_data(branch = None):
+def generate_branch_commit_data(branch = None):
 
     branch_commits = os.listdir('data/'+branch)
     #print branch_commits
@@ -66,6 +66,7 @@ def generate_brnach_commit_data(branch = None):
     for commit in branch_commits:
         full_file_path = 'data/%s/%s' % (branch, commit)
         commit_data = process_commit_file(full_file_path)
+        commit_data.branch = branch
 
         commits_dict[commit_data.commit_hash] = commit_data
 
@@ -77,7 +78,7 @@ def generate_branch_insight(branch = None):
 
 
     commit_data = {}
-    commit_data['raw'] = generate_brnach_commit_data(branch)
+    commit_data['raw'] = generate_branch_commit_data(branch)
 
     commit_data['total_branch_lines_additions'] = sum([commit_data['raw'][x].totalAdditions for x in commit_data['raw']])
     commit_data['total_branch_lines_deletions'] = sum([commit_data['raw'][x].totalDeletions for x in commit_data['raw']])

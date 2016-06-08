@@ -8,12 +8,13 @@ class CommitData():
 
 
     def __init__(self, commiter = '', commit_hash='', date = None,
-                 files_changed=[], additions=0, deletions=0):
+                 files_changed=[], additions=0, deletions=0, branch=''):
         self.commiter = commiter
         self.commit_hash = commit_hash
         self.date = date
         #self.merge_id = None
         self.files_changed = files_changed
+        self.branch = branch
 
         self.totalAdditions = additions
         self.totalDeletions = deletions
@@ -21,12 +22,13 @@ class CommitData():
 
 
     def __repr__(self):
-        return 'CommitData(%r,%r,%r,%r,%r,%r)' % (self.commiter,
+        return 'CommitData(%r,%r,%r,%r,%r,%r,%r)' % (self.commiter,
                                                   self.commit_hash,
                                                   self.date,
                                                   self.files_changed,
                                                   self.totalAdditions,
-                                                  self.totalDeletions)
+                                                  self.totalDeletions,
+                                                  self.branch)
 
 
 

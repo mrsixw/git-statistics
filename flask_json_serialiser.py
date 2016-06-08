@@ -12,10 +12,13 @@ class GitStatsFlaskJSONEncoder(JSONEncoder):
             schema = FileCommitDataSchema()
 
             #print schema.dump(o)
+            print """shdfjslkdfhslkfhsjkdhfsljkdhfskh"""
 
             return schema.dump(o)
 
         elif isinstance(o, CommitData):
+
+            print "dfsdf"
             return ''
         else:
             JSONEncoder.default(self, o)
