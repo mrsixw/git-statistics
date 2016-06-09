@@ -1,7 +1,5 @@
 import sqlite3
-from collections import OrderedDict
 from contextlib import closing
-from datetime import date, timedelta, datetime
 from os import remove, listdir
 from os.path import isfile
 from git_data_processor import generate_branch_commit_data
@@ -19,7 +17,7 @@ CREATE TABLE git_commit(
     commit_hash                   TEXT UNIQUE NOT NULL PRIMARY KEY
   , committer                     TEXT
   , commit_date                   TEXT
-  , commit_messge                 TEXT
+  , commit_message                 TEXT
   , branch_id                     INTEGER NOT NULL
   , FOREIGN KEY (branch_id)       REFERENCES git_branches(branch_id)
 );
@@ -110,34 +108,26 @@ class GitDB(object):
             return cur.fetchone()[0]
 
 
-    def addData(self, data, date = date.today()):
-        """
-        Takes a list of Defect Records and adds them to the database
-        """
+    def _add_commit(self,   commit_hash = None,
+                            committer = None,
+                            commit_date = None,
+                            commit_message = '',
+                            branch_id = None):
         with closing(self._connect()) as conn:
-
-            _insert_query='''
-            INSERT OR REPLACE INTO defect_record (defect_id, headline, state, severity, priority, target_fix_phase,
-                                        target_fix_version, feature, confidence, origin_system, origin_system_colloquial_name, submit_date, team, product_owner, external_bug_id, customer_severity)
-                                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-            '''
-            conn.executemany(_insert_query,
-                             [(record.defectId, record.headline, record.state, record.severity,
-                               record.priority, record.targetFixPhase, record.targetFixVersion, record.feature,
-                               record.confidence, record.originSystem, record.originSystemColloqialName,
-                               record.submitDate, record.team, record.productOwner, record.externalBugID,
-                               record.customerSeverity) for record in data])
-
-            conn.executemany('''
-                            INSERT or REPLACE into defect_date (defect_id, date, state, severity, priority, target_fix_phase, target_fix_version, customer_severity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                            ''',
-                             [(record.defectId, date, record.state, record.severity, record.priority,
-                               record.targetFixPhase, record.targetFixVersion, record.customerSeverity) for record in
-                              data])
-
+            conn.execute('''
+                        INSERT OR IGNORE INTO git_commit(commit_hash, committer, commit_date, commit_message, branch_id) VALUES (?, ?, ?, ?, ?);
+                         ''',
+                         (commit_hash, committer, commit_date, commit_message, branch_id))
             conn.commit()
 
 
+    def _add_commit_file_link(self, commit_hash = None, file_id = None, additions = None, deletions = None):
+        with closing(self._connect()) as conn:
+            conn.execute('''
+                        INSERT OR IGNORE INTO commit_file(commit_hash, file_id, additions, deletions) VALUES (?, ?, ?, ?);
+                         ''',
+                         (commit_hash, file_id, additions, deletions))
+            conn.commit()
 
 
 
@@ -161,7 +151,20 @@ if __name__ == '__main__':
         for commit in commits.keys():
             print commits[commit].commit_hash
             #print len(commits[commit].files_changed)
+
+            db._add_commit(commits[commit].commit_hash,
+                           commits[commit].commiter,
+                           commits[commit].date,
+                           '',
+                           branch_id)
+
+
             for file in commits[commit].files_changed:
                 #print file.file
                 db._add_file(file.file)
-                #print db._get_file_id(file.file)
+                file_id = db._get_file_id(file.file)
+
+                db._add_commit_file_link(commits[commit].commit_hash,
+                                         file_id,
+                                         file.additions,
+                                         file.deletions)

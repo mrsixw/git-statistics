@@ -106,4 +106,4 @@ def generate_branch_insight(branch = None):
     return commit_data
 
 if __name__ == '__main__':
-    generate_branch_insight('SKYD_FUSION')
+    generate_branch_insight('debug')
