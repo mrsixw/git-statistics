@@ -14,12 +14,13 @@ CREATE TABLE git_branches(
 );
 
 CREATE TABLE git_commit(
-    commit_hash                   TEXT UNIQUE NOT NULL PRIMARY KEY
+    commit_hash                   TEXT NOT NULL
   , committer                     TEXT
   , commit_date                   TEXT
   , commit_message                 TEXT
   , branch_id                     INTEGER NOT NULL
   , FOREIGN KEY (branch_id)       REFERENCES git_branches(branch_id)
+  , PRIMARY KEY (commit_hash, branch_id)
 );
 
 CREATE TABLE file(
