@@ -18,8 +18,8 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Branch selector <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                    {% for branch in session['branches'] %}
-                        <li><a href="http://{{ session['server_base_url'] }}/branch/{{branch }}">{{ branch }}</a></li>
+                    {% for b in branches %}
+                        <li><a href="http://{{ g._baseurl }}/branch/{{ b['branch_name'] }}">{{ b['branch_name'] }}</a></li>
                     {% endfor %}
                 </ul>
               </li>

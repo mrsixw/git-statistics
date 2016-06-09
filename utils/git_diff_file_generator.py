@@ -1,11 +1,11 @@
 import argparse
+
+import dateparser
 import os
 import re
-from FileData import FileData
-from git_interface import GitInterface
 from FileCommitData import FileCommitData
-from tabulate import tabulate
-import dateparser
+from FileData import FileData
+from utils.git_interface import GitInterface
 
 # the following is very helpful in understanding how the git diff format working
 # http://stackoverflow.com/questions/2529441/how-to-read-the-output-from-git-diff

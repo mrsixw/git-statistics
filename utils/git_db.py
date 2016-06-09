@@ -2,7 +2,7 @@ import sqlite3
 from contextlib import closing
 from os import remove, listdir
 from os.path import isfile
-from git_data_processor import generate_branch_commit_data
+from git_commit_file_processor import generate_branch_commit_data
 
 _GIT_SCHEMA = '''
 PRAGMA foreign_keys = ON;
@@ -17,7 +17,6 @@ CREATE TABLE git_commit(
     commit_hash                   TEXT NOT NULL
   , committer                     TEXT
   , commit_date                   TEXT
-  , commit_message                 TEXT
   , branch_id                     INTEGER NOT NULL
   , FOREIGN KEY (branch_id)       REFERENCES git_branches(branch_id)
   , PRIMARY KEY (commit_hash, branch_id)
@@ -46,7 +45,7 @@ class GitDB(object):
     def __init__(self, db_file = None):
 
         if db_file is None:
-            self._dbFile = './database/git_repo_data.db'
+            self._dbFile = '../database/git_repo_data.db'
         else:
             self._dbFile = db_file
         # check if we have a database, if not create it
@@ -137,7 +136,7 @@ if __name__ == '__main__':
     db = GitDB()
     db._createDB(True)
 
-    directories = listdir('./data')
+    directories = listdir('../data')
 
     for dir in directories:
         print dir

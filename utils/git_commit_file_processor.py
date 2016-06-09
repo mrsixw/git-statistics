@@ -72,38 +72,3 @@ def generate_branch_commit_data(branch = None):
 
     return commits_dict
 
-
-def generate_branch_insight(branch = None):
-
-
-
-    commit_data = {}
-    commit_data['raw'] = generate_branch_commit_data(branch)
-
-    commit_data['total_branch_lines_additions'] = sum([commit_data['raw'][x].totalAdditions for x in commit_data['raw']])
-    commit_data['total_branch_lines_deletions'] = sum([commit_data['raw'][x].totalDeletions for x in commit_data['raw']])
-    commit_data['total_branch_non_binary_file_edits'] = 0
-    commit_data['total_branch_non_binary_edits'] = 0
-    commit_data['earliest_brach_commit'] =  min([commit_data['raw'][x].date for x in commit_data['raw']])
-    commit_data['recent_branch_commit'] =  max([commit_data['raw'][x].date for x in commit_data['raw']])
-
-    commiters = [commit_data['raw'][x].commiter for x in commit_data['raw']]
-    files_changed =  [commit_data['raw'][x].files_changed for x in commit_data['raw']]
-    tmp  = [y.file for li in files_changed for y in li]
-    #print tmp
-
-    commit_data['top_commiters'] = Counter(commiters).most_common(10)
-    commit_data['popular_files_changed'] = Counter(tmp).most_common(50)
-
-
-    #print files_changed
-
-    #print commit_data
-
-    #print files_changed
-    #print len(files_changed)
-
-    return commit_data
-
-if __name__ == '__main__':
-    generate_branch_insight('debug')
