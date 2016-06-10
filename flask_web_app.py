@@ -6,7 +6,7 @@ import os
 import pygal
 from flask import Flask, render_template, session, g
 from flask_bootstrap import Bootstrap
-from git_insight_generator import generate_branch_insight
+from git_insight_generator import generate_branch_insight, generate_monthly_trend_data
 
 DATABASE = './database/git_repo_data.db'
 
@@ -56,13 +56,19 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
-@app.route('/charts/bar.svg')
-def generate_chart():
+@app.route('/charts/branch/<branch>/commits-over-time')
+def commits_over_time(branch):
 
 
     chart = pygal.Bar()
-    chart.add('Fibonacci', [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55])
-    #chart = chart.render_data_uri()
+
+    month_counter = generate_monthly_trend_data(query_db,branch)
+
+    months = sorted(month_counter.keys())
+
+    chart.x_labels = months
+    chart.add('Commits over time', [month_counter[x] for x in month_counter])
+
 
     return chart.render_response()
 
