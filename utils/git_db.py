@@ -3,6 +3,8 @@ from contextlib import closing
 from os import remove, listdir
 from os.path import isfile
 from git_commit_file_processor import generate_branch_commit_data
+from time import sleep
+
 
 _GIT_SCHEMA = '''
 PRAGMA foreign_keys = ON;
@@ -134,6 +136,11 @@ class GitDB(object):
 
 
 if __name__ == '__main__':
+
+    # dont be a fool
+    print "ABOUT TO DESTROY DATABASE...CTRL-C me now to stop!"
+    sleep(10)
+
     db = GitDB()
     db._createDB(True)
 
