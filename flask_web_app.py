@@ -36,6 +36,7 @@ def get_db():
 
     # hack
     g._baseurl = get_base_url()
+    print g._baseurl
     return db
 
 def query_db(query, args=(), one=False):
