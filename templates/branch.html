@@ -4,7 +4,11 @@
 {{ super()  }}
 {% endblock %}
 
+
 {% block content %}
+
+<script src="{{ url_for('static',filename='plotly-latest.min.js') }}"></script>
+
 <div class="page-header">
     <h3>Git statistics for {{ branch }}</h3>
 </div>
