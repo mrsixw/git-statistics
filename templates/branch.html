@@ -4,7 +4,11 @@
 {{ super()  }}
 {% endblock %}
 
+
 {% block content %}
+
+<script src="{{ url_for('static',filename='plotly-latest.min.js') }}"></script>
+
 <div class="page-header">
     <h3>Git statistics for {{ branch }}</h3>
 </div>
@@ -58,9 +62,19 @@
     <h3 class="panel-title">Commits Over Time</h3>
   </div>
   <div class="panel-body">
-        <figure>
-            <embed  class="image/svg+xml" src="http://{{ g._baseurl }}/charts/branch/{{branch}}/commits-over-time"></embed>
-        </figure>
+      {% for id in ids %}
+        <div id="{{id}}"></div>
+      {% endfor %}
+        <script type="text/javascript">
+            var graphs = {{graphJSON | safe}};
+            var ids = {{ids | safe}};
+
+            for(var i in graphs){
+                Plotly.plot(ids[i], // the ID of the div, created above
+                            graphs[i].data,
+                            graphs[i].layout || {});
+            }
+        </script>
   </div>
 </div>
 

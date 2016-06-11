@@ -3,10 +3,13 @@
 import sqlite3
 
 import os
-import pygal
+import plotly
+import json
 from flask import Flask, render_template, session, g
 from flask_bootstrap import Bootstrap
 from git_insight_generator import generate_branch_insight, generate_monthly_trend_data
+
+
 
 DATABASE = './database/git_repo_data.db'
 
@@ -47,7 +50,6 @@ def query_db(query, args=(), one=False):
 
 
 def get_branches():
-    print query_db("SELECT branch_name FROM git_branches")
     return query_db("SELECT branch_name FROM git_branches")
 
 @app.teardown_appcontext
@@ -57,29 +59,46 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
-@app.route('/charts/branch/<branch>/commits-over-time')
 def commits_over_time(branch):
 
+    cpm = generate_monthly_trend_data(query_db,branch)
 
-    chart = pygal.Bar()
+    graphs = [
+        dict(
+            data=[
+                dict(
+                    x=[x for x in sorted(cpm.keys())],
+                    y=[cpm[x] for x in sorted(cpm.keys())],
+                    type='bar'
+                ),
+            ],
+            layout=dict(
+                title='Commits Over Time'
+            )
+        )
+    ]
 
-    month_counter = generate_monthly_trend_data(query_db,branch)
+    # Add "ids" to each of the graphs to pass up to the client
+    # for templating
+    ids = ['Commits over time']
 
-    months = sorted(month_counter.keys())
-
-    chart.x_labels = months
-    chart.add('Commits over time', [month_counter[x] for x in month_counter])
-
-
-    return chart.render_response()
-
+    # Convert the figures to JSON
+    # PlotlyJSONEncoder appropriately converts pandas, datetime, etc
+    # objects to their JSON equivalents
+    graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
+    return ids,graphJSON
 
 @app.route('/branch/<branch>')
 def branch_index(branch):
     branches = get_branches()
 
-    return render_template('branch.html', branches = branches, branch = branch, branch_insight = generate_branch_insight(query_db, branch) )
+    ids, graphJSON = commits_over_time(branch)
 
+    return render_template('branch.html',   branches = branches,
+                                            branch = branch,
+                                            branch_insight = generate_branch_insight(query_db, branch),
+                                            ids = ids,
+                                            graphJSON = graphJSON)
 
 @app.route('/')
 def index():
