@@ -12,44 +12,6 @@ from utils.git_interface import GitInterface
 currentFile = None
 knownFiles = {}
 
-def process_line(line, commit=""):
-
-    match = re.match("^([0-9]*|-+?)\s([0-9]*|-+?)\s(.*)$",line)
-    if match:
-        additions, deletions, file = match.group(1,2,3)
-
-        if additions == '-':
-            additions = 0
-        if deletions == '-':
-            deletions = 0
-
-        if file in knownFiles:
-            fileData = knownFiles[file]
-        else:
-            fileData = FileData(file)
-            knownFiles[file] = fileData
-
-        commitData = FileCommitData(int(additions), int(deletions),commit)
-        fileData.commits.add(commitData)
-
-
-def process_file(file):
-
-    with open(file) as f:
-        for line in f:
-            process_line(line.strip())
-
-
-def check_file(file=None):
-    if file == None:
-        print "Error - no file specified"
-    else:
-        if os.path.isfile(file):
-            print "Processing file %s" % file
-            process_file(file)
-        else:
-            print "Error file %s does not exist" % file
-
 
 if __name__ == '__main__':
 
@@ -65,21 +27,11 @@ if __name__ == '__main__':
                         type=str,
                         default=".",
                         help="path to your git repo")
-    parser.add_argument('--output_file',dest='outputfile',
-                        action='store',
-                        type=str,
-                        default="results.html",
-                        help="File to place the results in (HTML)")
     parser.add_argument('--stop_commit',dest='stop_commit',
                         action='store',
                         type=str,
                         default=None,
                         help="Commit to stop at (limits processing)")
-    parser.add_argument('--filter_extensions',dest='filter_extensions',
-                        nargs="+",
-                        action='store',
-                        default=None,
-                        help="Filter the output based on the supplied list of file extensions")
     args = parser.parse_args()
 
 
