@@ -38,11 +38,19 @@ def generate_branch_insight(query_func, branch = None):
     return commit_data
 
 
-def generate_monthly_trend_data(query_fn, branch = None):
+def generate_monthly_commit_data(query_fn, branch = None):
+    __BRANCH_SQL = """
+                      SELECT branch_id FROM git_branches
+                      WHERE git_branches.branch_name = ?
+                   """
+
+
+    branch_id = query_fn(__BRANCH_SQL, (branch,), one=True)['branch_id']
+
     _COMMIT_SQL = """
-                    SELECT * FROM git_commit INNER JOIN git_branches using (branch_id) WHERE branch_name = ?;
+                    SELECT * FROM git_commit INNER JOIN git_branches using (branch_id) WHERE branch_id = ?;
                   """
-    branch_commits = query_fn(_COMMIT_SQL, (branch,))
+    branch_commits = query_fn(_COMMIT_SQL, (branch_id,))
 
     commits_per_month = []
 
@@ -51,6 +59,48 @@ def generate_monthly_trend_data(query_fn, branch = None):
         commits_per_month.append("%s-%s" % (d.year,str(d.month).zfill(2)))
 
     return Counter(commits_per_month)
+
+def generate_month_change_data(query_fn, branch):
+    __BRANCH_SQL = """
+                      SELECT branch_id FROM git_branches
+                      WHERE git_branches.branch_name = ?
+                   """
+
+
+    branch_id = query_fn(__BRANCH_SQL, (branch,), one=True)['branch_id']
+    print branch_id
+
+    _COMMIT_SQL = """
+                    SELECT * FROM git_commit INNER JOIN git_branches using (branch_id) WHERE branch_id = ?;
+                  """
+
+
+    branch_commits = query_fn(_COMMIT_SQL, (branch_id,))
+
+    commit_changes = {}
+
+    for x in branch_commits:
+        print commit_changes
+        _CHANGE_SQL = """
+                        SELECT *  FROM commit_file where commit_hash = ?;
+                      """
+
+        changes = query_fn(_CHANGE_SQL,(x['commit_hash'],))
+
+        commit_additions = sum([int(y['additions']) for y in changes])
+        commit_deletions = sum([int(y['deletions']) for y in changes])
+
+        d = dateparser.parse(x['commit_date'])
+
+        key =  "%s-%s" % (d.year, str(d.month).zfill(2))
+
+        if commit_changes.has_key(key):
+            commit_changes[key]['additions'] += commit_additions
+            commit_changes[key]['deletions'] += commit_deletions
+        else:
+            commit_changes[key] = {'additions':commit_additions,
+                                   'deletions':commit_deletions}
+    return commit_changes
 
 
 

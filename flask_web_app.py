@@ -7,7 +7,7 @@ import plotly
 import json
 from flask import Flask, render_template, session, g
 from flask_bootstrap import Bootstrap
-from git_insight_generator import generate_branch_insight, generate_monthly_trend_data
+from git_insight_generator import generate_branch_insight, generate_monthly_commit_data, generate_month_change_data
 
 
 
@@ -61,7 +61,8 @@ def close_connection(exception):
 
 def commits_over_time(branch):
 
-    cpm = generate_monthly_trend_data(query_db,branch)
+    cpm = generate_monthly_commit_data(query_db, branch)
+    changes = generate_month_change_data(query_db, branch)
 
     graphs = [
         dict(
@@ -75,12 +76,31 @@ def commits_over_time(branch):
             layout=dict(
                 title='Commits Over Time'
             )
+        ),
+        dict(
+            data=[
+                dict(
+                    x = [x for x in sorted(changes.keys())],
+                    y = [changes[x]['additions'] for x in sorted(changes.keys())],
+                    type ='bar'
+                ),
+                dict(
+                    x=[x for x in sorted(changes.keys())],
+                    y=[changes[x]['deletions'] for x in sorted(changes.keys())],
+                    type='bar'
+                )
+            ],
+            layout=dict(
+                title='Changes Over Time',
+                barmode='stack'
+            )
         )
+
     ]
 
     # Add "ids" to each of the graphs to pass up to the client
     # for templating
-    ids = ['Commits over time']
+    ids = ['Commits over time','Changes over time']
 
     # Convert the figures to JSON
     # PlotlyJSONEncoder appropriately converts pandas, datetime, etc
