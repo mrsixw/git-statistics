@@ -82,12 +82,16 @@ def commits_over_time(branch):
                 dict(
                     x = [x for x in sorted(changes.keys())],
                     y = [changes[x]['additions'] for x in sorted(changes.keys())],
-                    type ='bar'
+                    type ='bar',
+                    name = 'Code Additions',
+                    marker=dict(color='rgb(0,255,0)')
                 ),
                 dict(
                     x=[x for x in sorted(changes.keys())],
                     y=[changes[x]['deletions'] for x in sorted(changes.keys())],
-                    type='bar'
+                    type='bar',
+                    name = 'Code Deletions',
+                    marker=dict(color='rgb(255,0,0)')
                 )
             ],
             layout=dict(
