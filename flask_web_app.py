@@ -7,7 +7,7 @@ import plotly
 import json
 from flask import Flask, render_template, session, g
 from flask_bootstrap import Bootstrap
-from git_insight_generator import generate_branch_insight, generate_monthly_commit_data, generate_month_change_data
+from git_insight_generator import generate_branch_insight, generate_monthly_commit_data, generate_month_change_data, generate_commit_time_of_day
 
 
 
@@ -63,6 +63,15 @@ def commits_over_time(branch):
 
     cpm = generate_monthly_commit_data(query_db, branch)
     changes = generate_month_change_data(query_db, branch)
+    commit_tod = generate_commit_time_of_day(query_db, branch)
+
+    week_days = ['Monday',
+                 'Tuesday',
+                 'Wednesday',
+                 'Thursday',
+                 'Friday',
+                 'Saturday',
+                 'Sunday']
 
     graphs = [
         dict(
@@ -96,6 +105,26 @@ def commits_over_time(branch):
             ],
             layout=dict(
                 title='Changes Over Time',
+                barmode='stack'
+            )
+        ),
+        dict(
+            data = [
+                dict(
+                    x = week_days,
+                    y =  [commit_tod[x]['0-1'] for x in week_days],
+                    name = '0am-2am',
+                    type = 'bar'
+                ),
+                dict(
+                    x=week_days,
+                    y=[commit_tod[x]['2-3'] for x in week_days],
+                    name='2am-4am',
+                    type='bar'
+                ),
+            ],
+            layout=dict(
+                title='Commit Punchcard',
                 barmode='stack'
             )
         )
