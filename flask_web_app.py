@@ -122,6 +122,66 @@ def commits_over_time(branch):
                     name='2am-4am',
                     type='bar'
                 ),
+                dict(
+                    x=week_days,
+                    y=[commit_tod[x]['4-5'] for x in week_days],
+                    name='4am-6am',
+                    type='bar'
+                ),
+                dict(
+                    x=week_days,
+                    y=[commit_tod[x]['6-7'] for x in week_days],
+                    name='6am-8am',
+                    type='bar'
+                ),
+                dict(
+                    x=week_days,
+                    y=[commit_tod[x]['8-9'] for x in week_days],
+                    name='8am-10am',
+                    type='bar'
+                ),
+                dict(
+                    x=week_days,
+                    y=[commit_tod[x]['10-11'] for x in week_days],
+                    name='10am-12pm',
+                    type='bar'
+                ),
+                dict(
+                    x=week_days,
+                    y=[commit_tod[x]['12-13'] for x in week_days],
+                    name='12pm-2pm',
+                    type='bar'
+                ),
+                dict(
+                    x=week_days,
+                    y=[commit_tod[x]['14-15'] for x in week_days],
+                    name='2pm-4pm',
+                    type='bar'
+                ),
+                dict(
+                    x=week_days,
+                    y=[commit_tod[x]['16-17'] for x in week_days],
+                    name='4pm-6pm',
+                    type='bar'
+                ),
+                dict(
+                    x=week_days,
+                    y=[commit_tod[x]['18-19'] for x in week_days],
+                    name='6pm-8pm',
+                    type='bar'
+                ),
+                dict(
+                    x=week_days,
+                    y=[commit_tod[x]['20-21'] for x in week_days],
+                    name='8pm-10pm',
+                    type='bar'
+                ),
+                dict(
+                    x=week_days,
+                    y=[commit_tod[x]['22-23'] for x in week_days],
+                    name='10pm-12am',
+                    type='bar'
+                ),
             ],
             layout=dict(
                 title='Commit Punchcard',
@@ -133,7 +193,7 @@ def commits_over_time(branch):
 
     # Add "ids" to each of the graphs to pass up to the client
     # for templating
-    ids = ['Commits over time','Changes over time']
+    ids = ['Commits over time','Changes over time', 'Commit Punchcard']
 
     # Convert the figures to JSON
     # PlotlyJSONEncoder appropriately converts pandas, datetime, etc

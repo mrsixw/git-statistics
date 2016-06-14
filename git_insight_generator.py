@@ -9,7 +9,7 @@ def generate_branch_insight(query_func, branch = None):
                    """
 
     branch_id = query_func(__BRANCH_SQL,(branch,),one=True)['branch_id']
-    print branch_id
+    #print branch_id
 
 
     _COMMIT_SQL = """
@@ -34,7 +34,7 @@ def generate_branch_insight(query_func, branch = None):
     commit_data['top_commiters'] = Counter(commiters).most_common(10)
     commit_data['popular_files_changed'] = Counter(files_changed).most_common(50)
 
-    print len (branch_commits)
+    #print len (branch_commits)
     return commit_data
 
 
@@ -68,7 +68,7 @@ def generate_month_change_data(query_fn, branch):
 
 
     branch_id = query_fn(__BRANCH_SQL, (branch,), one=True)['branch_id']
-    print branch_id
+    #print branch_id
 
     _COMMIT_SQL = """
                     SELECT * FROM git_commit INNER JOIN git_branches using (branch_id) WHERE branch_id = ?;
@@ -80,7 +80,7 @@ def generate_month_change_data(query_fn, branch):
     commit_changes = {}
 
     for x in branch_commits:
-        print commit_changes
+        #print commit_changes
         _CHANGE_SQL = """
                         SELECT *  FROM commit_file where commit_hash = ?;
                       """
@@ -103,21 +103,6 @@ def generate_month_change_data(query_fn, branch):
     return commit_changes
 
 
-def day_hours_generator():
-    days = ['Monday',
-             'Tuesday',
-             'Wednesday',
-             'Thursday',
-             'Friday',
-             'Saturday',
-             'Sunday']
-
-    hours = ['%s-%s' % (n-1,n) for n in xrange(1,24,2)]
-
-    days_hours = [(x,y) for x in days for y in hours]
-
-    return days_hours
-
 
 def generate_commit_time_of_day(query_fn, branch):
     __BRANCH_SQL = """
@@ -127,7 +112,7 @@ def generate_commit_time_of_day(query_fn, branch):
 
 
     branch_id = query_fn(__BRANCH_SQL, (branch,), one=True)['branch_id']
-    print branch_id
+    #print branch_id
 
     _COMMIT_SQL = """
                     SELECT * FROM git_commit INNER JOIN git_branches using (branch_id) WHERE branch_id = ?;
@@ -135,12 +120,9 @@ def generate_commit_time_of_day(query_fn, branch):
 
     branch_commits = query_fn(_COMMIT_SQL, (branch_id,))
 
+    commit_tod = {key:{key2:0 for key2 in ['%s-%s' % (n-1,n) for n in xrange(1,24,2)]} for key in ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']}
 
-    commit_tod = {key: {} for (key,v) in day_hours_generator()}
-
-    commit_tod = {key: {v:0} for (key,v) in day_hours_generator()}
-
-    print commit_tod
+    #print commit_tod
 
     for x in branch_commits:
         date = dateparser.parse(x['commit_date'])
@@ -152,18 +134,12 @@ def generate_commit_time_of_day(query_fn, branch):
             hour_period = "0-1"
         elif hour % 2 == 0:
             # even number
-            hour_period = "%s-%s" % (hour - 1, hour)
+            hour_period = "%s-%s" % (hour, hour +1)
         else:
-            hour_period = "%s-%s" % (hour, hour + 1)
+            hour_period = "%s-%s" % (hour -1, hour)
 
-        print "%s %s, %s" % (day_name,hour, hour_period)
+        #print "%s %s, %s" % (day_name,hour, hour_period)
 
-        if commit_tod.has_key(day_name):
-            if commit_tod[day_name].has_key(hour_period):
-                commit_tod[day_name][hour_period] += 1
-            else:
-                commit_tod[day_name][hour_period] = 1
-        else:
-            commit_tod[day_name] = {hour_period:1}
+        commit_tod[day_name][hour_period] += 1
 
     return  commit_tod
