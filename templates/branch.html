@@ -19,11 +19,13 @@
   </div>
   <div class="panel-body">
       <table class="table">
-          <tr><td>Total commits</td><td>{{ branch_insight['raw']|length }}</td></tr>
+          <tr><td>Total commits</td><td>{{ branch_insight['raw']|length|local_number }}</td></tr>
           <tr><td>Earliest Commit</td><td>{{ branch_insight['earliest_brach_commit'] }}</td></tr>
           <tr><td>Most Recent Commit</td><td>{{ branch_insight['recent_branch_commit'] }}</td></tr>
-          <tr><td>Total File Additions</td><td>{{ branch_insight['total_branch_lines_additions'] }}</td></tr>
-          <tr><td>Total File Deletions</td><td>{{ branch_insight['total_branch_lines_deletions'] }}</td></tr>
+          <tr><td>Total File Additions</td><td>{{ branch_insight['total_branch_lines_additions']|local_number }}</td></tr>
+          <tr><td>Total File Deletions</td><td>{{ branch_insight['total_branch_lines_deletions']|local_number }}</td></tr>
+          <tr><td>Total File Modified</td><td>{{ branch_insight['files_changed']|length|local_number }}</td></tr>
+          <tr><td>Unique Files Modified</td><td>{{ branch_insight['unique_files_changed']|length|local_number }}</td></tr>
           <tr><td>MVP</td><td>{{ branch_insight['top_commiters'][0][0] }} - {{ branch_insight['top_commiters'][0][1] }} commits</td></tr>
       </table>
   </div>

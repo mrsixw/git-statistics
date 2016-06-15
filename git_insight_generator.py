@@ -30,9 +30,10 @@ def generate_branch_insight(query_func, branch = None):
     commit_data['earliest_brach_commit'] =  min([x['commit_date'] for x in branch_commits])
     commit_data['recent_branch_commit'] =  max([x['commit_date'] for x in branch_commits])
     commiters = [x['committer'] for x in branch_commits]
-    files_changed =  [x['file_path'] for x in file_change_data]
+    commit_data['files_changed'] =  [x['file_path'] for x in file_change_data]
     commit_data['top_commiters'] = Counter(commiters).most_common(10)
-    commit_data['popular_files_changed'] = Counter(files_changed).most_common(50)
+    commit_data['unique_files_changed'] = Counter(commit_data['files_changed'])
+    commit_data['popular_files_changed'] = Counter(commit_data['files_changed']).most_common(50)
 
     #print len (branch_commits)
     return commit_data

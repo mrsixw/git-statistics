@@ -8,13 +8,20 @@ import json
 from flask import Flask, render_template, session, g
 from flask_bootstrap import Bootstrap
 from git_insight_generator import generate_branch_insight, generate_monthly_commit_data, generate_month_change_data, generate_commit_time_of_day
-
+import locale
 
 
 DATABASE = './database/git_repo_data.db'
 
 app = Flask(__name__)
 Bootstrap(app)
+
+
+def print_local_number(number):
+    locale.setlocale(locale.LC_ALL,'en_GB')
+    return locale.format("%d", number, grouping=True)
+
+app.jinja_env.filters['local_number'] =  print_local_number
 
 def get_base_url():
     if app.config['SERVER_NAME'] is not None:
@@ -24,7 +31,7 @@ def get_base_url():
             base += app.config['APPLICATION_ROOT']
     else:
         base = '127.0.0.1:5000'
-    print base
+    #print base
     return base
 
 def make_dicts(cursor, row):
@@ -39,7 +46,7 @@ def get_db():
 
     # hack
     g._baseurl = get_base_url()
-    print g._baseurl
+    #print g._baseurl
     return db
 
 def query_db(query, args=(), one=False):
