@@ -36,7 +36,7 @@ itself expects to generate a `data` directory under the root of where you applic
 and called `database/git_repo_data.db`
 
 # Testing
-This application has be developed and tested on Mac OS X (10.11) El Capitan with Pycharm Professional hosting a virtual environemnt
+Both parts of this application has be developed and tested on Mac OS X (10.11) El Capitan with Pycharm Professional hosting a virtual environemnt
 running Python 2.7.10. The appliation has been deployed on Ubuntu Linux 15.10 behind an Apache Webserver via `mod_wsgi`.
 
 

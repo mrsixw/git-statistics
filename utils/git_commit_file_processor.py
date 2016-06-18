@@ -5,7 +5,6 @@ from FileCommitData import FileCommitData
 import os
 import re
 import dateparser
-from collections import Counter
 
 
 commit_pattern = re.compile('^commit\s*([0-9a-f]*)')
