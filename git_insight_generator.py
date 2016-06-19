@@ -1,14 +1,20 @@
 from collections import Counter
 import dateparser
 
-def generate_branch_insight(query_func, branch = None):
 
+def _get_branch_id(query_func, branch):
     __BRANCH_SQL = """
                       SELECT branch_id FROM git_branches
                       WHERE git_branches.branch_name = ?
                    """
+    branch_id = query_func(__BRANCH_SQL, (branch,), one=True)['branch_id']
+    return branch_id
 
-    branch_id = query_func(__BRANCH_SQL,(branch,),one=True)['branch_id']
+
+
+def generate_branch_insight(query_func, branch = None):
+
+    branch_id = _get_branch_id(query_func, branch)
     #print branch_id
 
 
@@ -40,13 +46,8 @@ def generate_branch_insight(query_func, branch = None):
 
 
 def generate_monthly_commit_data(query_fn, branch = None):
-    __BRANCH_SQL = """
-                      SELECT branch_id FROM git_branches
-                      WHERE git_branches.branch_name = ?
-                   """
 
-
-    branch_id = query_fn(__BRANCH_SQL, (branch,), one=True)['branch_id']
+    branch_id = _get_branch_id(query_fn, branch)
 
     _COMMIT_SQL = """
                     SELECT * FROM git_commit INNER JOIN git_branches using (branch_id) WHERE branch_id = ?;
@@ -62,13 +63,8 @@ def generate_monthly_commit_data(query_fn, branch = None):
     return Counter(commits_per_month)
 
 def generate_month_change_data(query_fn, branch):
-    __BRANCH_SQL = """
-                      SELECT branch_id FROM git_branches
-                      WHERE git_branches.branch_name = ?
-                   """
 
-
-    branch_id = query_fn(__BRANCH_SQL, (branch,), one=True)['branch_id']
+    branch_id = _get_branch_id(query_fn,branch)
     #print branch_id
 
     _COMMIT_SQL = """
@@ -106,14 +102,8 @@ def generate_month_change_data(query_fn, branch):
 
 
 def generate_commit_time_of_day(query_fn, branch):
-    __BRANCH_SQL = """
-                      SELECT branch_id FROM git_branches
-                      WHERE git_branches.branch_name = ?
-                   """
 
-
-    branch_id = query_fn(__BRANCH_SQL, (branch,), one=True)['branch_id']
-    #print branch_id
+    branch_id = _get_branch_id(query_fn, branch)
 
     _COMMIT_SQL = """
                     SELECT * FROM git_commit INNER JOIN git_branches using (branch_id) WHERE branch_id = ?;
