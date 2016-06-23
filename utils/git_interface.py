@@ -2,8 +2,9 @@ import subprocess
 
 class GitInterface:
 
-    def __init__(self, repo_path='.'):
+    def __init__(self, repo_path='.', branch='master'):
         self.repo_path = repo_path
+        self.branch = branch
 
     def get_commit_list(self, stop_commit = None):
         output = subprocess.check_output(['git','--no-pager','-C',self.repo_path,'log','--format="%H"'])
@@ -32,6 +33,17 @@ class GitInterface:
 
     def get_commit_tuple_pairs(self,commit_list):
         return zip(commit_list, commit_list[1::])
+
+    def clone_repo(self, repo_url):
+        return subprocess.check_call(['git','clone','-b',self.branch,repo_url,self.repo_path])
+
+    def switch_branch(self, branch='master'):
+        self.branch = branch
+        return subprocess.check_call(['git','checkout',self.branch])
+
+    def cleanup_repo(self):
+        return subprocess.call(['rm','-rf',self.repo_path])
+
 
 if __name__ == "__main__":
     repo = '<repo>'

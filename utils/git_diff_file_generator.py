@@ -22,13 +22,24 @@ if __name__ == '__main__':
     parser.add_argument('--repo_path',dest='path',
                         action='store',
                         type=str,
-                        default=".",
+                        default="./repo",
                         help="path to your git repo")
     parser.add_argument('--stop_commit',dest='stop_commit',
                         action='store',
                         type=str,
                         default=None,
                         help="Commit to stop at (limits processing)")
+    parser.add_argument('--branch', dest='branch',
+                        action='store',
+                        type=str,
+                        default='master',
+                        help="Branch to operate on")
+    parser.add_argument('--repo_url', dest='repo_url',
+                        action='store',
+                        type=str,
+                        default=None,
+                        help="Repo URL",
+                        required=True)
     args = parser.parse_args()
 
 
@@ -36,7 +47,8 @@ if __name__ == '__main__':
         os.mkdir(args.data_dir)
 
     # we start parsing the git log directly
-    git_if = GitInterface(args.path)
+    git_if = GitInterface(args.path, args.branch)
+    git_if.clone_repo(args.repo_url)
     commit_list =  git_if.get_commit_list(args.stop_commit)
 
     print commit_list
@@ -61,5 +73,6 @@ if __name__ == '__main__':
                                               commit)
         with open(args.data_dir + os.sep + filename,'w') as f:
             f.write(commit_output)
+    git_if.cleanup_repo()
 
 
