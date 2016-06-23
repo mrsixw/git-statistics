@@ -39,7 +39,7 @@ class GitInterface:
 
     def switch_branch(self, branch='master'):
         self.branch = branch
-        return subprocess.check_call(['git','checkout',self.branch])
+        return subprocess.check_call(['git','-C',self.repo_path,'checkout',self.branch])
 
     def cleanup_repo(self):
         return subprocess.call(['rm','-rf',self.repo_path])
