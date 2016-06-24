@@ -11,17 +11,21 @@ def _get_branch_id(query_func, branch):
     return branch_id
 
 
+def _get_commits_for_branch(query_func, branch_id):
+    __COMMIT_SQL = """
+        SELECT * FROM git_commit WHERE branch_id = ?
+      """
+
+    commits = query_func(__COMMIT_SQL, (branch_id,),)
+    return commits
+
 
 def generate_branch_insight(query_func, branch = None):
 
     branch_id = _get_branch_id(query_func, branch)
     #print branch_id
 
-
-    _COMMIT_SQL = """
-                    SELECT * FROM git_commit WHERE branch_id = ?
-                  """
-    branch_commits = query_func(_COMMIT_SQL,(branch_id,))
+    branch_commits = _get_commits_for_branch(query_func,branch_id)
 
     _FILE_SQL = """
                     SELECT * from commit_file INNER JOIN file USING (file_id) INNER JOIN git_commit using (commit_hash) WHERE branch_id = ?;
@@ -67,12 +71,7 @@ def generate_month_change_data(query_fn, branch):
     branch_id = _get_branch_id(query_fn,branch)
     #print branch_id
 
-    _COMMIT_SQL = """
-                    SELECT * FROM git_commit INNER JOIN git_branches using (branch_id) WHERE branch_id = ?;
-                  """
-
-
-    branch_commits = query_fn(_COMMIT_SQL, (branch_id,))
+    branch_commits = _get_commits_for_branch(query_fn,branch_id)
 
     commit_changes = {}
 
@@ -105,11 +104,7 @@ def generate_commit_time_of_day(query_fn, branch):
 
     branch_id = _get_branch_id(query_fn, branch)
 
-    _COMMIT_SQL = """
-                    SELECT * FROM git_commit INNER JOIN git_branches using (branch_id) WHERE branch_id = ?;
-                  """
-
-    branch_commits = query_fn(_COMMIT_SQL, (branch_id,))
+    branch_commits = _get_commits_for_branch(query_fn, branch_id)
 
     commit_tod = {key:{key2:0 for key2 in ['%s-%s' % (n-1,n) for n in xrange(1,24,2)]} for key in ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']}
 
