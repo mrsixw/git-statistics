@@ -34,7 +34,7 @@ if __name__ == '__main__':
                         type=str,
                         default='master',
                         help="Branch to operate on")
-    parser.add_argument('--repo_url', dest='repo_url',
+    parser.add_argument('--repo-url', dest='repo_url',
                         action='store',
                         type=str,
                         default=None,
@@ -45,6 +45,11 @@ if __name__ == '__main__':
 
     if not os.path.exists(args.data_dir):
         os.mkdir(args.data_dir)
+
+    output_dir = args.data_dir + os.sep + args.branch
+
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
 
     # we start parsing the git log directly
     git_if = GitInterface(args.path, args.branch)
@@ -71,7 +76,7 @@ if __name__ == '__main__':
                                               str(parsed_date.hour).zfill(2),
                                               str(parsed_date.minute).zfill(2),
                                               commit)
-        with open(args.data_dir + os.sep + filename,'w') as f:
+        with open(output_dir + os.sep + filename,'w') as f:
             f.write(commit_output)
     git_if.cleanup_repo()
 

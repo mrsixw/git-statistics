@@ -57,13 +57,13 @@ def process_commit_file(commit_file = None):
 
 def generate_branch_commit_data(branch = None):
 
-    branch_commits = os.listdir('data/'+branch)
+    branch_commits = os.listdir('../data/'+branch)
     #print branch_commits
 
     commits_dict = {}
 
     for commit in branch_commits:
-        full_file_path = 'data/%s/%s' % (branch, commit)
+        full_file_path = '../data/%s/%s' % (branch, commit)
         commit_data = process_commit_file(full_file_path)
         commit_data.branch = branch
 

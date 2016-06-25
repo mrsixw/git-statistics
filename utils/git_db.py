@@ -1,6 +1,6 @@
 import sqlite3
 from contextlib import closing
-from os import remove, listdir
+import os
 from os.path import isfile
 from git_commit_file_processor import generate_branch_commit_data
 from time import sleep
@@ -48,11 +48,9 @@ class GitDB(object):
     def __init__(self, db_file = None):
 
         if db_file is None:
-            self._dbFile = './database/git_repo_data.db'
+            self._dbFile = '../database/git_repo_data.db'
         else:
             self._dbFile = db_file
-        # check if we have a database, if not create it
-        self._createDB(False)
 
     def _connect(self):
         """
@@ -69,7 +67,7 @@ class GitDB(object):
         """
         if force or not isfile(self._dbFile):
             try:
-                remove(self._dbFile)
+                os.remove(self._dbFile)
             except OSError:
                 print "Could not remove %s", self._dbFile
 
@@ -139,12 +137,12 @@ if __name__ == '__main__':
 
     # dont be a fool
     print "ABOUT TO DESTROY DATABASE...CTRL-C me now to stop!"
-    sleep(10)
+   # sleep(10)
 
     db = GitDB()
     db._createDB(True)
 
-    directories = listdir('./data')
+    directories =  [name for name in os.listdir('../data') if os.path.isdir(os.path.join('../data', name))]
 
     for dir in directories:
         print dir
