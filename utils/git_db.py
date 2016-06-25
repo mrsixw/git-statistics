@@ -137,7 +137,7 @@ if __name__ == '__main__':
 
     # dont be a fool
     print "ABOUT TO DESTROY DATABASE...CTRL-C me now to stop!"
-   # sleep(10)
+    sleep(10)
 
     db = GitDB()
     db._createDB(True)
