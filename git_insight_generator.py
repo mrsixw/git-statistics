@@ -49,14 +49,14 @@ def generate_branch_insight(query_func, branch = None):
     return commit_data
 
 
-def generate_monthly_commit_data(query_fn, branch = None):
+def generate_monthly_commit_data(query_func, branch = None):
 
-    branch_id = _get_branch_id(query_fn, branch)
+    branch_id = _get_branch_id(query_func, branch)
 
     _COMMIT_SQL = """
                     SELECT * FROM git_commit INNER JOIN git_branches using (branch_id) WHERE branch_id = ?;
                   """
-    branch_commits = query_fn(_COMMIT_SQL, (branch_id,))
+    branch_commits = query_func(_COMMIT_SQL, (branch_id,))
 
     commits_per_month = []
 
@@ -66,12 +66,12 @@ def generate_monthly_commit_data(query_fn, branch = None):
 
     return Counter(commits_per_month)
 
-def generate_month_change_data(query_fn, branch):
+def generate_month_change_data(query_func, branch):
 
-    branch_id = _get_branch_id(query_fn,branch)
+    branch_id = _get_branch_id(query_func,branch)
     #print branch_id
 
-    branch_commits = _get_commits_for_branch(query_fn,branch_id)
+    branch_commits = _get_commits_for_branch(query_func,branch_id)
 
     commit_changes = {}
 
@@ -81,7 +81,7 @@ def generate_month_change_data(query_fn, branch):
                         SELECT *  FROM commit_file where commit_hash = ?;
                       """
 
-        changes = query_fn(_CHANGE_SQL,(x['commit_hash'],))
+        changes = query_func(_CHANGE_SQL,(x['commit_hash'],))
 
         commit_additions = sum([int(y['additions']) for y in changes])
         commit_deletions = sum([int(y['deletions']) for y in changes])
@@ -100,11 +100,11 @@ def generate_month_change_data(query_fn, branch):
 
 
 
-def generate_commit_time_of_day(query_fn, branch):
+def generate_commit_time_of_day(query_func, branch):
 
-    branch_id = _get_branch_id(query_fn, branch)
+    branch_id = _get_branch_id(query_func, branch)
 
-    branch_commits = _get_commits_for_branch(query_fn, branch_id)
+    branch_commits = _get_commits_for_branch(query_func, branch_id)
 
     commit_tod = {key:{key2:0 for key2 in ['%s-%s' % (n-1,n) for n in xrange(1,24,2)]} for key in ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']}
 
